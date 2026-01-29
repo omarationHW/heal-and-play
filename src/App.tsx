@@ -217,7 +217,7 @@ function App() {
       <footer className="w-full px-6 md:px-12 lg:px-20 py-3">
         <div className="max-w-7xl mx-auto flex flex-col items-center gap-2 text-center">
           <p className="text-dark/50 text-sm">
-            © 2026 HEAL AND PLAY. Todos los derechos reservados.
+            © 2026 Heal and Play & Magica Mujer. Todos los derechos reservados.
           </p>
           <a href="https://api.whatsapp.com/message/3HIAUMOGKWMBF1?autoload=1&app_absent=0" target="_blank" rel="noopener noreferrer" className="text-dark/50 hover:text-dark text-sm transition-colors">
               Contacto
