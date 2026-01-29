@@ -142,7 +142,7 @@ function App() {
 
               <p className="text-dark/70 text-sm md:text-base leading-relaxed mb-4 max-w-lg mx-auto md:mx-0">
                 Una experiencia única de sanación y bienestar emocional,
-                cuidadosamente curada para acompañarte en tu viaje de transformación interior.
+                cuidadosamente intencionada para acompañarte en tu viaje de transformación interior.
               </p>
 
               {/* Email Capture */}
@@ -215,7 +215,7 @@ function App() {
 
       {/* Footer */}
       <footer className="w-full px-6 md:px-12 lg:px-20 py-3">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
+        <div className="max-w-7xl mx-auto flex flex-col items-center gap-2 text-center">
           <p className="text-dark/50 text-sm">
             © 2026 HEAL AND PLAY. Todos los derechos reservados.
           </p>
