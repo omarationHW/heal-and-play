@@ -188,11 +188,11 @@ function App() {
             {/* Right Column - Image */}
             <div className="order-1 md:order-2 flex justify-center md:justify-end">
               <div className="relative">
-                <div className="absolute -inset-10 bg-white/30 rounded-full blur-3xl"></div>
+                <div className="absolute -inset-10 bg-white/30 rounded-full blur-3xl magic-box-glow"></div>
                 <img
                   src="/Magic box (800 x 800 px).png"
                   alt="Magic Box - Caja de regalo con moño negro"
-                  className="relative w-80 md:w-96 lg:w-[28rem] h-auto drop-shadow-2xl"
+                  className="relative w-80 md:w-96 lg:w-[28rem] h-auto drop-shadow-2xl magic-box"
                 />
               </div>
             </div>

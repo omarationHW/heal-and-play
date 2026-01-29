@@ -65,3 +65,32 @@ body {
     transform: translateX(0);
   }
 }
+
+/* Magic Box Animations */
+@keyframes float {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-15px);
+  }
+}
+
+@keyframes box-entrance {
+  0% {
+    opacity: 0;
+    transform: scale(0.8) translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.magic-box {
+  animation: box-entrance 1s ease-out forwards, float 2s ease-in-out 1s infinite;
+}
+
+.magic-box-glow {
+  animation: box-entrance 1.2s ease-out forwards;
+}
