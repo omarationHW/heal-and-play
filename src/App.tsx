@@ -11,9 +11,9 @@ function App() {
     seconds: 0
   })
 
-  // Countdown al 14 de febrero 2026
+  // Countdown al 1 de marzo 2026
   useEffect(() => {
-    const targetDate = new Date('2026-02-14T00:00:00').getTime()
+    const targetDate = new Date('2026-03-01T00:00:00').getTime()
 
     const interval = setInterval(() => {
       const now = new Date().getTime()
@@ -61,7 +61,7 @@ function App() {
   const marqueeText = "COMING SOON • PRÓXIMAMENTE • "
 
   return (
-    <div className="h-screen flex flex-col overflow-hidden relative">
+    <div className="min-h-screen flex flex-col overflow-x-hidden relative">
 
       {/* Marquee Top */}
       <div className="w-full bg-dark text-beige py-2 overflow-hidden">
@@ -77,15 +77,15 @@ function App() {
       </div>
 
       {/* Navigation */}
-      <nav className="w-full px-6 md:px-12 lg:px-20 py-3 flex justify-between items-center">
-        <div className="text-xl tracking-wider font-medium">
-          Heal & Play
+      <nav className="w-full px-6 md:px-12 lg:px-20 py-3 relative">
+        <div className="text-xl tracking-wider font-medium uppercase text-center">
+          HEAL AND PLAY
         </div>
         <a
           href="https://www.instagram.com/heal_play/"
           target="_blank"
           rel="noopener noreferrer"
-          className="flex items-center gap-2 text-dark/70 hover:text-dark transition-colors"
+          className="absolute right-6 md:right-12 lg:right-20 top-1/2 -translate-y-1/2 flex items-center gap-2 text-dark/70 hover:text-dark transition-colors"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
@@ -96,7 +96,7 @@ function App() {
 
       {/* Countdown Banner */}
       <div className="w-full text-center py-4 md:py-6">
-        <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-dark/50 mb-2">14 de Febrero 2026</p>
+        <p className="text-xs md:text-sm uppercase tracking-[0.2em] text-dark/50 mb-2">1 de Marzo 2026</p>
         <div className="flex justify-center items-center gap-4 md:gap-6">
           <div className="text-center">
             <span className="block text-3xl md:text-4xl lg:text-5xl font-bold">{String(timeLeft.days).padStart(2, '0')}</span>
@@ -121,7 +121,7 @@ function App() {
       </div>
 
       {/* Hero Section */}
-      <main className="flex-1 flex items-center overflow-hidden">
+      <main className="flex-1 flex items-center py-6 md:py-0">
         <div className="w-full px-6 md:px-12 lg:px-20">
           <div className="max-w-7xl mx-auto grid md:grid-cols-2 gap-6 md:gap-12 items-center">
 
@@ -217,7 +217,7 @@ function App() {
       <footer className="w-full px-6 md:px-12 lg:px-20 py-3">
         <div className="max-w-7xl mx-auto flex flex-col sm:flex-row justify-between items-center gap-2">
           <p className="text-dark/50 text-sm">
-            © 2026 Heal & Play. Todos los derechos reservados.
+            © 2026 HEAL AND PLAY. Todos los derechos reservados.
           </p>
           <a href="https://api.whatsapp.com/message/3HIAUMOGKWMBF1?autoload=1&app_absent=0" target="_blank" rel="noopener noreferrer" className="text-dark/50 hover:text-dark text-sm transition-colors">
               Contacto
