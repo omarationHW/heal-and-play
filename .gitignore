@@ -31,5 +31,8 @@ dist-ssr
 # Claude
 .claude/
 
-# Documentation (local only)
-*.md
+# Documentation (keep important docs)
+!README.md
+!CONTEXTO_HEAL_AND_PLAY.md
+!PROGRESO_DESARROLLO.md
+!PROGRESO_PROYECTO.md
