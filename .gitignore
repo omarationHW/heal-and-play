@@ -30,9 +30,7 @@ dist-ssr
 
 # Claude
 .claude/
+.agents/
 
-# Documentation (keep important docs)
-!README.md
-!CONTEXTO_HEAL_AND_PLAY.md
-!PROGRESO_DESARROLLO.md
-!PROGRESO_PROYECTO.md
+# Supabase migrations (run manually in SQL Editor, not deployed via git)
+supabase/
