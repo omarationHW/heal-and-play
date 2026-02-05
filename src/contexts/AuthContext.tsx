@@ -97,10 +97,51 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let isSubscribed = true
+    let initialized = false
 
-    const processSession = async (session: Session | null) => {
-      if (!isSubscribed) return
+    const setLoaded = (session: Session | null, profile: Profile | null) => {
+      if (!isSubscribed || initialized) return
+      initialized = true
+      setState({
+        user: session?.user ?? null,
+        session,
+        profile,
+        loading: false,
+        initialized: true,
+      })
+    }
+
+    const initAuth = async () => {
       try {
+        // Race getSession against a 3-second timeout
+        const result = await Promise.race([
+          supabase.auth.getSession(),
+          new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000))
+        ])
+
+        if (!isSubscribed || initialized) return
+
+        if (result && 'data' in result && result.data.session?.user) {
+          const profile = await fetchProfile(result.data.session.user)
+          setLoaded(result.data.session, profile)
+        } else {
+          // No session or timeout
+          setLoaded(null, null)
+        }
+      } catch (err) {
+        console.error('Error initializing auth:', err)
+        setLoaded(null, null)
+      }
+    }
+
+    initAuth()
+
+    // Listen for subsequent auth changes (sign in, sign out, token refresh)
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      async (event, session) => {
+        if (event === 'INITIAL_SESSION') return // Already handled above
+        if (!isSubscribed) return
+
         if (session?.user) {
           const profile = await fetchProfile(session.user)
           if (!isSubscribed) return
@@ -120,40 +161,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             initialized: true,
           })
         }
-      } catch (err) {
-        console.error('Error processing session:', err)
-        if (!isSubscribed) return
-        setState({
-          user: session?.user ?? null,
-          session: session ?? null,
-          profile: null,
-          loading: false,
-          initialized: true,
-        })
-      }
-    }
-
-    // 1. Get initial session explicitly (reliable on refresh)
-    supabase.auth.getSession()
-      .then(({ data: { session } }) => processSession(session))
-      .catch((err) => {
-        console.error('Error getting session:', err)
-        if (isSubscribed) {
-          setState({
-            user: null,
-            session: null,
-            profile: null,
-            loading: false,
-            initialized: true,
-          })
-        }
-      })
-
-    // 2. Listen for subsequent auth changes (sign in, sign out, token refresh)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'INITIAL_SESSION') return // Already handled by getSession
-        await processSession(session)
       }
     )
 
@@ -190,12 +197,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const signOut = useCallback(async () => {
-    try {
-      await supabase.auth.signOut({ scope: 'local' })
-    } catch (err) {
-      console.error('Error signing out:', err)
-    }
-    // Always clear state even if signOut fails
+    // Clear Supabase localStorage keys immediately
+    const keysToRemove = Object.keys(localStorage).filter(
+      (key) => key.startsWith('sb-') || key.includes('supabase')
+    )
+    keysToRemove.forEach((key) => localStorage.removeItem(key))
+
+    // Clear state FIRST, don't wait for Supabase
     setState({
       user: null,
       session: null,
@@ -203,6 +211,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading: false,
       initialized: true,
     })
+
+    // Then try to sign out from Supabase (fire and forget)
+    supabase.auth.signOut({ scope: 'local' }).catch(() => {})
   }, [])
 
   const resetPassword = useCallback(async (email: string) => {
