@@ -2,7 +2,7 @@ export type UserRole = 'admin' | 'client'
 
 export type MaterialTipo = 'pdf' | 'audio' | 'video'
 
-export type MaterialAccesoNivel = 'libre' | 'premium' | 'privado'
+export type MaterialAccesoNivel = 'libre' | 'premium' | 'privado' | 'secreto'
 
 export interface Profile {
   id: string
@@ -14,6 +14,7 @@ export interface Profile {
   direccion: string | null
   direccion_lat: number | null
   direccion_lng: number | null
+  tiene_acceso_secreto: boolean
   role: UserRole
   created_at: string
   updated_at: string
@@ -42,4 +43,18 @@ export interface MaterialAcceso {
   user_id: string
   granted_at: string
   granted_by: string | null
+}
+
+export interface SesionZoom {
+  id: string
+  titulo: string
+  descripcion: string | null
+  zoom_link: string
+  meeting_id: string | null
+  passcode: string | null
+  fecha_hora: string
+  recurrencia: string | null
+  activa: boolean
+  orden: number
+  created_at: string
 }

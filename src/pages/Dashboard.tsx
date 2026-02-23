@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { validateNombreCompleto } from '../lib/auth-helpers'
 import AddressInput from '../components/AddressInput'
-import type { MaterialDigital } from '../types/database'
+import type { MaterialDigital, SesionZoom } from '../types/database'
 import type { MaterialTipo } from '../types/database'
 
 const countryCodes = [
@@ -37,15 +37,6 @@ const comingSoonCards = [
     icon: (
       <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
-  {
-    title: 'Contenido Exclusivo',
-    description: 'Artículos, tips y contenido especial solo para miembros de nuestra comunidad.',
-    icon: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
       </svg>
     ),
   },
@@ -337,8 +328,16 @@ export default function Dashboard() {
           </div>
         </section>
 
+        {/* Challenge Section - solo acceso secreto */}
+        {profile?.tiene_acceso_secreto && (
+          <>
+            <ChallengeInfoSection />
+            <SesionesSection />
+          </>
+        )}
+
         {/* Material Digital Section */}
-        <MaterialDigitalSection />
+        <MaterialDigitalSection hasSecretAccess={profile?.tiene_acceso_secreto ?? false} />
 
         {/* Coming Soon Cards */}
         <section>
@@ -365,6 +364,197 @@ export default function Dashboard() {
 }
 
 // ──────────────────────────────────────────────
+// Challenge Info Section
+// ──────────────────────────────────────────────
+
+const challengeContent = [
+  { day: '1', title: 'New Girl' },
+  { day: '3', title: 'Módulos' },
+  { day: '5', title: 'Gestión Emocional Consciente' },
+  { day: '10', title: 'Conexión y Cuidado del Cuerpo' },
+  { day: '16', title: 'Regulación del Sistema Nervioso' },
+  { day: '21', title: 'Armonización de tus Relaciones' },
+  { day: '25', title: 'Integración del Proceso' },
+  { day: '26', title: 'Habitarte' },
+  { day: '*', title: 'Ejercicios Complementarios' },
+]
+
+function ChallengeInfoSection() {
+  const [expanded, setExpanded] = useState(false)
+
+  return (
+    <section className="mb-8 font-carlito">
+      <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-dark/5">
+        {/* Header */}
+        <div className="text-center mb-6">
+          <p className="font-maven text-xs tracking-[0.3em] uppercase text-dark/50 mb-2">28 días de auto-cuidado</p>
+          <h2 className="font-maven text-3xl md:text-4xl font-black uppercase tracking-wide leading-tight">
+            New Girl Challenge
+          </h2>
+          <p className="text-sm text-dark/60 mt-2 max-w-md mx-auto">
+            Comienza a crear tu personaje protagonico para esta nueva era. Totalmente un reset para tu mindset y comenzar a crear tu mejor versión.
+          </p>
+        </div>
+
+        {/* What's included */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          {[
+            { label: 'Workbook Digital', icon: '📖' },
+            { label: 'Sesiones Online', icon: '💻' },
+            { label: 'Acompañamiento Personal', icon: '🤝' },
+            { label: 'Material Extra', icon: '✨' },
+          ].map((item) => (
+            <div key={item.label} className="text-center py-3 px-2 bg-dark/[0.03] rounded-xl">
+              <span className="text-lg block mb-1">{item.icon}</span>
+              <span className="font-maven text-[11px] tracking-wider uppercase font-semibold text-dark/70">{item.label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Format summary */}
+        <div className="text-center mb-4 py-3 border-y border-dark/5">
+          <p className="font-maven text-sm font-bold tracking-wider uppercase text-dark/80">
+            4 clases en línea &middot; 4 lunes &middot; 4 módulos
+          </p>
+          <p className="text-xs text-dark/50 mt-1">Para crear tu nueva identidad</p>
+        </div>
+
+        {/* Contenido toggle */}
+        <button
+          onClick={() => setExpanded(!expanded)}
+          className="w-full flex items-center justify-between py-2 text-left"
+        >
+          <span className="font-maven text-xs tracking-wider uppercase font-semibold text-dark/60">Contenido del Workbook</span>
+          <svg
+            className={`w-4 h-4 text-dark/40 transition-transform ${expanded ? 'rotate-180' : ''}`}
+            fill="none" stroke="currentColor" viewBox="0 0 24 24"
+          >
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          </svg>
+        </button>
+
+        {expanded && (
+          <div className="mt-3 space-y-2.5">
+            {challengeContent.map((item, i) => (
+              <div key={i} className="flex items-baseline gap-4">
+                <span className="font-brittany text-xl text-dark/40 w-8 text-right shrink-0">{item.day}</span>
+                <span className="font-maven text-sm font-semibold uppercase tracking-wide">{item.title}</span>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    </section>
+  )
+}
+
+// ──────────────────────────────────────────────
+// Sesiones Zoom Section
+// ──────────────────────────────────────────────
+
+function SesionesSection() {
+  const { user } = useAuth()
+  const [sesiones, setSesiones] = useState<SesionZoom[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('sesiones_zoom')
+          .select('*')
+          .eq('activa', true)
+          .order('orden', { ascending: true })
+        if (error) console.error('Error fetching sesiones:', error)
+        setSesiones((data as SesionZoom[]) || [])
+      } catch (err) {
+        console.error('Error fetching sesiones:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [user?.id])
+
+  if (loading) {
+    return (
+      <section className="mb-12">
+        <h2 className="text-sm tracking-wider uppercase font-medium mb-6">Sesiones</h2>
+        <p className="text-xs text-dark/50">Cargando sesiones...</p>
+      </section>
+    )
+  }
+
+  if (sesiones.length === 0) return null
+
+  return (
+    <section className="mb-12 font-carlito">
+      <h2 className="font-maven text-sm tracking-wider uppercase font-semibold mb-6">Sesiones</h2>
+      <div className="grid grid-cols-1 gap-4">
+        {sesiones.map((s) => (
+          <div
+            key={s.id}
+            className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 md:p-8 border border-dark/5"
+          >
+            <div className="flex items-start gap-4">
+              {/* Video icon */}
+              <div className="w-12 h-12 bg-dark/5 rounded-full flex items-center justify-center shrink-0 text-dark/50">
+                <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <h3 className="font-maven text-lg font-bold tracking-wide uppercase mb-1">{s.titulo}</h3>
+                {s.descripcion && (
+                  <p className="text-sm text-dark/60 mb-2">{s.descripcion}</p>
+                )}
+                {s.recurrencia && (
+                  <p className="text-sm text-dark/60 mb-4">
+                    <span className="inline-block mr-1.5">
+                      <svg className="w-3.5 h-3.5 inline -mt-0.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                      </svg>
+                    </span>
+                    {s.recurrencia}
+                  </p>
+                )}
+
+                {/* Join button */}
+                <a
+                  href={s.zoom_link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-maven inline-flex items-center gap-2 px-5 py-2.5 bg-dark text-beige text-sm tracking-wider uppercase font-semibold rounded-lg hover:bg-dark/90 transition-colors"
+                >
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  </svg>
+                  Unirse a la sesión
+                </a>
+
+                {/* Meeting info */}
+                {(s.meeting_id || s.passcode) && (
+                  <div className="mt-4 flex flex-wrap gap-x-6 gap-y-1 text-sm text-dark/40">
+                    {s.meeting_id && (
+                      <span>Meeting ID: <span className="text-dark/60 font-bold">{s.meeting_id}</span></span>
+                    )}
+                    {s.passcode && (
+                      <span>Passcode: <span className="text-dark/60 font-bold">{s.passcode}</span></span>
+                    )}
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
+    </section>
+  )
+}
+
+// ──────────────────────────────────────────────
 // Material Digital Section
 // ──────────────────────────────────────────────
 
@@ -386,12 +576,14 @@ const tipoIcons: Record<MaterialTipo, React.ReactNode> = {
   ),
 }
 
-function MaterialDigitalSection() {
+function MaterialDigitalSection({ hasSecretAccess }: { hasSecretAccess: boolean }) {
+  const { user } = useAuth()
   const [materiales, setMateriales] = useState<MaterialDigital[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     const load = async () => {
+      setLoading(true)
       try {
         const { data, error } = await supabase
           .from('materiales_digitales')
@@ -408,7 +600,7 @@ function MaterialDigitalSection() {
       }
     }
     load()
-  }, [])
+  }, [user?.id])
 
   if (loading) {
     return (
@@ -438,14 +630,14 @@ function MaterialDigitalSection() {
       <h2 className="text-sm tracking-wider uppercase font-medium mb-6">Material Digital</h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {materiales.map((m) => (
-          <MaterialCard key={m.id} material={m} />
+          <MaterialCard key={m.id} material={m} useChallengeFonts={hasSecretAccess && m.acceso === 'secreto'} />
         ))}
       </div>
     </section>
   )
 }
 
-function MaterialCard({ material }: { material: MaterialDigital }) {
+function MaterialCard({ material, useChallengeFonts }: { material: MaterialDigital & { acceso?: string }; useChallengeFonts?: boolean }) {
   const [signedUrl, setSignedUrl] = useState<string | null>(null)
   const [loadingUrl, setLoadingUrl] = useState(false)
   const [error, setError] = useState('')
@@ -489,21 +681,28 @@ function MaterialCard({ material }: { material: MaterialDigital }) {
   }
 
   return (
-    <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-dark/5">
+    <div className={`bg-white/60 backdrop-blur-sm rounded-2xl p-6 border border-dark/5 ${useChallengeFonts ? 'font-carlito' : ''}`}>
       {/* Header */}
       <div className="flex items-start gap-3 mb-3">
         <div className="w-10 h-10 bg-dark/5 rounded-full flex items-center justify-center shrink-0 text-dark/50">
           {tipoIcons[material.tipo]}
         </div>
         <div className="min-w-0 flex-1">
-          <h3 className="text-sm font-medium mb-0.5">{material.titulo}</h3>
+          <h3 className={`text-sm font-medium mb-0.5 ${useChallengeFonts ? 'font-maven font-bold uppercase tracking-wide' : ''}`}>{material.titulo}</h3>
           {material.descripcion && (
             <p className="text-xs text-dark/50 leading-relaxed">{material.descripcion}</p>
           )}
         </div>
-        <span className="text-[10px] tracking-wider uppercase bg-dark/5 text-dark/50 px-2 py-0.5 rounded shrink-0">
-          {tipoBadge[material.tipo]}
-        </span>
+        <div className="flex flex-col items-end gap-1 shrink-0">
+          <span className={`text-[10px] tracking-wider uppercase px-2 py-0.5 rounded ${useChallengeFonts ? 'font-maven font-semibold' : ''} bg-dark/5 text-dark/50`}>
+            {tipoBadge[material.tipo]}
+          </span>
+          {material.acceso === 'secreto' && (
+            <span className={`text-[10px] tracking-wider uppercase px-2 py-0.5 rounded ${useChallengeFonts ? 'font-maven font-semibold' : ''} bg-amber-100 text-amber-700`}>
+              Exclusivo
+            </span>
+          )}
+        </div>
       </div>
 
       {/* Audio player inline */}

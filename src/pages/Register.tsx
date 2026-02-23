@@ -12,6 +12,7 @@ export default function Register() {
   const [email, setEmail] = useState('')
   const [fechaNacimiento, setFechaNacimiento] = useState('')
   const [address, setAddress] = useState({ text: '', lat: null as number | null, lng: null as number | null })
+  const [fraseSecreta, setFraseSecreta] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -50,6 +51,7 @@ export default function Register() {
       direccion: address.text || undefined,
       direccion_lat: address.lat ?? undefined,
       direccion_lng: address.lng ?? undefined,
+      frase_secreta: fraseSecreta.trim() || undefined,
     })
     setSubmitting(false)
 
@@ -138,6 +140,20 @@ export default function Register() {
             Dirección <span className="normal-case tracking-normal text-dark/40">(opcional)</span>
           </label>
           <AddressInput value={address} onChange={setAddress} />
+        </div>
+
+        <div>
+          <label className="block text-xs tracking-wider uppercase text-dark/60 mb-1.5">
+            Frase secreta <span className="normal-case tracking-normal text-dark/40">(opcional)</span>
+          </label>
+          <input
+            type="text"
+            value={fraseSecreta}
+            onChange={(e) => setFraseSecreta(e.target.value)}
+            className="w-full px-4 py-2.5 bg-white border border-dark/10 rounded-lg text-sm focus:outline-none focus:border-dark/30 transition-colors"
+            placeholder="Si tienes una, ingrésala aquí"
+            autoComplete="off"
+          />
         </div>
 
         <div>

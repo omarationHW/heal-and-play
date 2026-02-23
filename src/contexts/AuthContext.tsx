@@ -15,7 +15,7 @@ interface AuthState {
 interface AuthContextValue extends AuthState {
   isAdmin: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
-  signUp: (email: string, password: string, nombreCompleto: string, extra?: { fecha_nacimiento?: string; direccion?: string; direccion_lat?: number; direccion_lng?: number }) => Promise<{ error: string | null }>
+  signUp: (email: string, password: string, nombreCompleto: string, extra?: { fecha_nacimiento?: string; direccion?: string; direccion_lat?: number; direccion_lng?: number; frase_secreta?: string }) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
   resetPassword: (email: string) => Promise<{ error: string | null }>
   updatePassword: (newPassword: string) => Promise<{ error: string | null }>
@@ -64,6 +64,33 @@ async function fetchProfile(user: User): Promise<Profile | null> {
   }
 }
 
+// Validate secret phrase outside of fetchProfile to avoid triggering auth loops
+let fraseValidated = false
+async function validateFraseSecreta(user: User, profile: Profile): Promise<Profile> {
+  if (fraseValidated) return profile
+  const metaFrase = user.user_metadata?.frase_secreta as string | undefined
+  if (!metaFrase || profile.tiene_acceso_secreto) {
+    fraseValidated = true
+    return profile
+  }
+  fraseValidated = true
+  try {
+    const { data: esValida } = await supabase.rpc('validar_frase_secreta', {
+      frase_input: metaFrase,
+    })
+    if (esValida) {
+      profile.tiene_acceso_secreto = true
+    }
+    // Clear frase_secreta from user_metadata (this triggers onAuthStateChange but fraseValidated flag prevents loop)
+    await supabase.auth.updateUser({
+      data: { frase_secreta: null },
+    })
+  } catch (err) {
+    console.error('Error validating secret phrase:', err)
+  }
+  return profile
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [state, setState] = useState<AuthState>({
     user: null,
@@ -97,61 +124,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     let isSubscribed = true
-    let initialized = false
 
-    const setLoaded = (session: Session | null, profile: Profile | null) => {
-      if (!isSubscribed || initialized) return
-      initialized = true
-      setState({
-        user: session?.user ?? null,
-        session,
-        profile,
-        loading: false,
-        initialized: true,
-      })
-    }
-
-    const initAuth = async () => {
-      try {
-        // Race getSession against a 3-second timeout
-        const result = await Promise.race([
-          supabase.auth.getSession(),
-          new Promise<null>((resolve) => setTimeout(() => resolve(null), 3000))
-        ])
-
-        if (!isSubscribed || initialized) return
-
-        if (result && 'data' in result && result.data.session?.user) {
-          const profile = await fetchProfile(result.data.session.user)
-          setLoaded(result.data.session, profile)
-        } else {
-          // No session or timeout
-          setLoaded(null, null)
-        }
-      } catch (err) {
-        console.error('Error initializing auth:', err)
-        setLoaded(null, null)
-      }
-    }
-
-    initAuth()
-
-    // Listen for subsequent auth changes (sign in, sign out, token refresh)
+    // Use onAuthStateChange as the single source of truth.
+    // INITIAL_SESSION fires immediately from localStorage (no network needed),
+    // then TOKEN_REFRESHED / SIGNED_OUT fire as the session is validated.
+    // This avoids the previous race-condition where a slow getSession would
+    // time out and incorrectly log the user out.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (event === 'INITIAL_SESSION') return // Already handled above
+      async (_event, session) => {
         if (!isSubscribed) return
 
         if (session?.user) {
-          const profile = await fetchProfile(session.user)
-          if (!isSubscribed) return
-          setState({
+          // Set user immediately so ProtectedRoute unblocks right away
+          setState(prev => ({
+            ...prev,
             user: session.user,
             session,
-            profile,
             loading: false,
             initialized: true,
-          })
+          }))
+          // Load profile in background
+          let profile = await fetchProfile(session.user)
+          if (!isSubscribed) return
+          if (profile) profile = await validateFraseSecreta(session.user, profile)
+          if (!isSubscribed) return
+          setState(prev => ({ ...prev, profile }))
         } else {
           setState({
             user: null,
@@ -180,7 +177,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     email: string,
     password: string,
     nombreCompleto: string,
-    extra?: { fecha_nacimiento?: string; direccion?: string; direccion_lat?: number; direccion_lng?: number }
+    extra?: { fecha_nacimiento?: string; direccion?: string; direccion_lat?: number; direccion_lng?: number; frase_secreta?: string }
   ) => {
     const { error } = await supabase.auth.signUp({
       email,
@@ -190,6 +187,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           nombre_completo: nombreCompleto,
           ...extra,
         },
+        emailRedirectTo: `${window.location.origin}/login`,
       },
     })
     if (error) return { error: error.message }
@@ -211,6 +209,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       loading: false,
       initialized: true,
     })
+
+    // Reset frase validation flag for next login
+    fraseValidated = false
 
     // Then try to sign out from Supabase (fire and forget)
     supabase.auth.signOut({ scope: 'local' }).catch(() => {})

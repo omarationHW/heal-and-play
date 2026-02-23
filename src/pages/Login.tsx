@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, Navigate, useNavigate } from 'react-router-dom'
+import { Link, Navigate } from 'react-router-dom'
 import { useAuth } from '../contexts/AuthContext'
 import { getAuthErrorMessage, validateEmail, validatePassword } from '../lib/auth-helpers'
 import type { AuthError } from '@supabase/supabase-js'
@@ -7,7 +7,6 @@ import AuthLayout from '../components/AuthLayout'
 
 export default function Login() {
   const { user, isAdmin, loading, signIn } = useAuth()
-  const navigate = useNavigate()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -40,9 +39,7 @@ export default function Login() {
       setError(getAuthErrorMessage({ message: signInError } as AuthError))
       return
     }
-
-    // Navigation happens via AuthContext state change, but we also push explicitly
-    navigate('/dashboard')
+    // Navigation happens automatically via the `if (user)` redirect above
   }
 
   return (

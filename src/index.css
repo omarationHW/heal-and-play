@@ -16,6 +16,8 @@
   --color-dark: #2e2b29;
   --font-family-poppins: 'Poppins', sans-serif;
   --font-family-brittany: 'Brittany', cursive;
+  --font-family-maven: 'Maven Pro', sans-serif;
+  --font-family-carlito: 'Carlito', sans-serif;
 }
 
 /* Base Styles */
@@ -27,9 +29,17 @@ body {
   min-height: 100vh;
 }
 
-/* Brittany font utility */
+/* Font utilities */
 .font-brittany {
   font-family: 'Brittany', cursive;
+}
+
+.font-maven {
+  font-family: 'Maven Pro', sans-serif;
+}
+
+.font-carlito {
+  font-family: 'Carlito', sans-serif;
 }
 
 /* Marquee Animation */
