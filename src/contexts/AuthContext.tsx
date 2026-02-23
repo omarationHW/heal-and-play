@@ -60,7 +60,7 @@ async function fetchProfile(user: User): Promise<Profile | null> {
 
     return profile
   } catch (err) {
-    console.error('Unexpected error fetching profile:', err)
+    console.error('[Auth] Unexpected error fetching profile:', err)
     return null
   }
 }
@@ -103,23 +103,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // sessionReady = true only after we've confirmed the JWT works (profile fetched successfully)
   const [sessionReady, setSessionReady] = useState(false)
 
-  // Safety timeout: if auth never finishes initializing, force it after 10s
-  useEffect(() => {
-    if (!state.initialized) {
-      const timeout = setTimeout(() => {
-        setState(prev => {
-          if (!prev.initialized) {
-            console.warn('Auth initialization timed out — forcing loaded state')
-            return { ...prev, loading: false, initialized: true }
-          }
-          return prev
-        })
-        setSessionReady(true)
-      }, 10000)
-      return () => clearTimeout(timeout)
-    }
-  }, [state.initialized])
-
   const refreshProfile = useCallback(async () => {
     if (!state.user) return
     const profile = await fetchProfile(state.user)
@@ -127,58 +110,101 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [state.user])
 
   useEffect(() => {
-    let isSubscribed = true
+    let cancelled = false
+    // Counter to deduplicate concurrent profile fetches — only the latest one wins
+    let processId = 0
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (event, session) => {
-        if (!isSubscribed) return
+    // Async profile loading — runs OUTSIDE the onAuthStateChange callback
+    // to avoid Supabase internal lock deadlocks.
+    async function loadProfile(user: User) {
+      const myId = ++processId
 
-        if (session?.user) {
-          // Set user immediately so ProtectedRoute unblocks right away
-          setState(prev => ({
-            ...prev,
-            user: session.user,
-            session,
-            loading: false,
-            initialized: true,
-          }))
+      // Yield to next microtask so Supabase releases its internal session lock
+      await new Promise(r => setTimeout(r, 0))
+      if (cancelled || myId !== processId) return
 
-          // On page refresh, INITIAL_SESSION fires from localStorage but the
-          // access token may be expired. If fetchProfile fails (RLS rejects the
-          // stale JWT), force a token refresh and retry with the fresh token.
-          let profile = await fetchProfile(session.user)
+      let profile = await fetchProfile(user)
+      if (cancelled || myId !== processId) return
 
-          if (!profile && event === 'INITIAL_SESSION' && isSubscribed) {
-            // Force token refresh — this uses the refresh_token to get a new
-            // access_token, guaranteeing subsequent queries work with RLS.
-            const { data } = await supabase.auth.refreshSession()
-            if (!isSubscribed) return
-            if (data.session) {
-              profile = await fetchProfile(data.session.user)
-            }
+      // If profile fetch failed, the JWT might be stale — refresh and retry
+      if (!profile) {
+        console.warn('[Auth] profile fetch failed, refreshing token...')
+        try {
+          const { data, error } = await supabase.auth.refreshSession()
+          if (error) {
+            console.error('[Auth] refreshSession error:', error.message)
+          } else if (data.session) {
+            if (cancelled || myId !== processId) return
+            profile = await fetchProfile(data.session.user)
+            if (cancelled || myId !== processId) return
+            // Update session to the refreshed one
+            setState(prev => ({ ...prev, user: data.session!.user, session: data.session! }))
           }
-
-          if (!isSubscribed) return
-          if (profile) profile = await validateFraseSecreta(session.user, profile)
-          if (!isSubscribed) return
-
-          setState(prev => ({ ...prev, profile }))
-          setSessionReady(true)
-        } else {
-          setState({
-            user: null,
-            session: null,
-            profile: null,
-            loading: false,
-            initialized: true,
-          })
-          setSessionReady(true)
+        } catch (e) {
+          console.error('[Auth] refreshSession exception:', e)
         }
+      }
+
+      if (cancelled || myId !== processId) return
+
+      if (profile) {
+        profile = await validateFraseSecreta(user, profile)
+        if (cancelled || myId !== processId) return
+      }
+
+      setState(prev => ({ ...prev, profile }))
+      setSessionReady(true)
+    }
+
+    // ─── Subscribe to auth events ───────────────────────────────────────
+    // CRITICAL: The callback must be SYNCHRONOUS (no async/await) to avoid
+    // blocking Supabase's internal session lock. All async work (DB queries,
+    // token refresh) is deferred to loadProfile() which runs outside the lock.
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        if (cancelled) return
+
+        if (!session?.user) {
+          // No session — user is logged out
+          processId++ // cancel any pending loadProfile
+          setState({ user: null, session: null, profile: null, loading: false, initialized: true })
+          setSessionReady(true)
+          return
+        }
+
+        // Set user/session SYNCHRONOUSLY so ProtectedRoute unblocks immediately
+        setState(prev => ({
+          ...prev,
+          user: session.user,
+          session,
+          loading: false,
+          initialized: true,
+        }))
+
+        // TOKEN_REFRESHED = just a new access_token, no need to refetch profile
+        if (event === 'TOKEN_REFRESHED') return
+
+        // INITIAL_SESSION, SIGNED_IN, USER_UPDATED — load profile asynchronously
+        loadProfile(session.user)
       }
     )
 
+    // Safety timeout: if nothing resolves within 10s, force loaded state
+    const safetyTimeout = setTimeout(() => {
+      setState(prev => {
+        if (!prev.initialized) {
+          console.warn('[Auth] initialization timed out — forcing loaded state')
+          return { ...prev, loading: false, initialized: true }
+        }
+        return prev
+      })
+      setSessionReady(true)
+    }, 10000)
+
     return () => {
-      isSubscribed = false
+      cancelled = true
+      processId++ // cancel any pending loadProfile
+      clearTimeout(safetyTimeout)
       subscription.unsubscribe()
     }
   }, [])
