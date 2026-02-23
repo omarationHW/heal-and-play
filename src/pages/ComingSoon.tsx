@@ -1,9 +1,11 @@
 import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 
 export default function ComingSoon() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle')
   const [timeLeft, setTimeLeft] = useState({
@@ -95,18 +97,29 @@ export default function ComingSoon() {
             </svg>
             <span className="text-sm hidden sm:inline">@heal_play</span>
           </a>
-          <button
-            onClick={() => navigate('/registro')}
-            className="text-sm tracking-wider uppercase px-3 py-1.5 bg-dark text-beige rounded-lg hover:bg-dark/90 transition-colors"
-          >
-            Registro
-          </button>
-          <button
-            onClick={() => navigate('/login')}
-            className="text-sm tracking-wider uppercase px-3 py-1.5 border border-dark/20 rounded-lg text-dark/70 hover:text-dark hover:border-dark/40 transition-colors"
-          >
-            Iniciar Sesión
-          </button>
+          {user ? (
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="text-sm tracking-wider uppercase px-3 py-1.5 bg-dark text-beige rounded-lg hover:bg-dark/90 transition-colors"
+            >
+              Mi Dashboard
+            </button>
+          ) : (
+            <>
+              <button
+                onClick={() => navigate('/registro')}
+                className="text-sm tracking-wider uppercase px-3 py-1.5 bg-dark text-beige rounded-lg hover:bg-dark/90 transition-colors"
+              >
+                Registro
+              </button>
+              <button
+                onClick={() => navigate('/login')}
+                className="text-sm tracking-wider uppercase px-3 py-1.5 border border-dark/20 rounded-lg text-dark/70 hover:text-dark hover:border-dark/40 transition-colors"
+              >
+                Iniciar Sesión
+              </button>
+            </>
+          )}
         </div>
       </nav>
 
