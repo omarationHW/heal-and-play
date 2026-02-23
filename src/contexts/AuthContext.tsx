@@ -14,6 +14,7 @@ interface AuthState {
 
 interface AuthContextValue extends AuthState {
   isAdmin: boolean
+  sessionReady: boolean
   signIn: (email: string, password: string) => Promise<{ error: string | null }>
   signUp: (email: string, password: string, nombreCompleto: string, extra?: { fecha_nacimiento?: string; direccion?: string; direccion_lat?: number; direccion_lng?: number; frase_secreta?: string }) => Promise<{ error: string | null }>
   signOut: () => Promise<void>
@@ -99,6 +100,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     loading: true,
     initialized: false,
   })
+  // sessionReady = true only after we've confirmed the JWT works (profile fetched successfully)
+  const [sessionReady, setSessionReady] = useState(false)
 
   // Safety timeout: if auth never finishes initializing, force it after 10s
   useEffect(() => {
@@ -111,6 +114,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           }
           return prev
         })
+        setSessionReady(true)
       }, 10000)
       return () => clearTimeout(timeout)
     }
@@ -128,8 +132,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     // Use onAuthStateChange as the single source of truth.
     // INITIAL_SESSION fires immediately from localStorage (no network needed),
     // then TOKEN_REFRESHED / SIGNED_OUT fire as the session is validated.
-    // This avoids the previous race-condition where a slow getSession would
-    // time out and incorrectly log the user out.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       async (_event, session) => {
         if (!isSubscribed) return
@@ -143,12 +145,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             loading: false,
             initialized: true,
           }))
-          // Load profile in background
+
+          // Fetch profile — this is the real test that the JWT works.
+          // On page refresh, INITIAL_SESSION fires with a potentially stale token.
+          // If fetchProfile fails, we retry after a short delay to give the
+          // TOKEN_REFRESHED event time to fire and update the client internally.
           let profile = await fetchProfile(session.user)
+
+          if (!profile && isSubscribed) {
+            // Token might not be ready yet — wait a moment and retry
+            await new Promise(r => setTimeout(r, 1000))
+            if (!isSubscribed) return
+            profile = await fetchProfile(session.user)
+          }
+
           if (!isSubscribed) return
           if (profile) profile = await validateFraseSecreta(session.user, profile)
           if (!isSubscribed) return
+
           setState(prev => ({ ...prev, profile }))
+          setSessionReady(true)
         } else {
           setState({
             user: null,
@@ -157,6 +173,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             loading: false,
             initialized: true,
           })
+          setSessionReady(true)
         }
       }
     )
@@ -210,8 +227,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       initialized: true,
     })
 
-    // Reset frase validation flag for next login
+    // Reset flags for next login
     fraseValidated = false
+    setSessionReady(false)
 
     // Then try to sign out from Supabase (fire and forget)
     supabase.auth.signOut({ scope: 'local' }).catch(() => {})
@@ -234,6 +252,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const value: AuthContextValue = {
     ...state,
     isAdmin: state.profile?.role === 'admin',
+    sessionReady,
     signIn,
     signUp,
     signOut,

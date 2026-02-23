@@ -453,11 +453,12 @@ function ChallengeInfoSection() {
 // ──────────────────────────────────────────────
 
 function SesionesSection() {
-  const { user } = useAuth()
+  const { sessionReady } = useAuth()
   const [sesiones, setSesiones] = useState<SesionZoom[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!sessionReady) return
     const load = async () => {
       setLoading(true)
       try {
@@ -475,7 +476,7 @@ function SesionesSection() {
       }
     }
     load()
-  }, [user?.id])
+  }, [sessionReady])
 
   if (loading) {
     return (
@@ -577,11 +578,12 @@ const tipoIcons: Record<MaterialTipo, React.ReactNode> = {
 }
 
 function MaterialDigitalSection({ hasSecretAccess }: { hasSecretAccess: boolean }) {
-  const { user } = useAuth()
+  const { sessionReady } = useAuth()
   const [materiales, setMateriales] = useState<MaterialDigital[]>([])
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    if (!sessionReady) return
     const load = async () => {
       setLoading(true)
       try {
@@ -600,7 +602,7 @@ function MaterialDigitalSection({ hasSecretAccess }: { hasSecretAccess: boolean 
       }
     }
     load()
-  }, [user?.id])
+  }, [sessionReady])
 
   if (loading) {
     return (
