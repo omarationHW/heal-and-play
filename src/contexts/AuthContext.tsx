@@ -129,11 +129,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     let isSubscribed = true
 
-    // Use onAuthStateChange as the single source of truth.
-    // INITIAL_SESSION fires immediately from localStorage (no network needed),
-    // then TOKEN_REFRESHED / SIGNED_OUT fire as the session is validated.
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      async (_event, session) => {
+      async (event, session) => {
         if (!isSubscribed) return
 
         if (session?.user) {
@@ -146,17 +143,19 @@ export function AuthProvider({ children }: { children: ReactNode }) {
             initialized: true,
           }))
 
-          // Fetch profile — this is the real test that the JWT works.
-          // On page refresh, INITIAL_SESSION fires with a potentially stale token.
-          // If fetchProfile fails, we retry after a short delay to give the
-          // TOKEN_REFRESHED event time to fire and update the client internally.
+          // On page refresh, INITIAL_SESSION fires from localStorage but the
+          // access token may be expired. If fetchProfile fails (RLS rejects the
+          // stale JWT), force a token refresh and retry with the fresh token.
           let profile = await fetchProfile(session.user)
 
-          if (!profile && isSubscribed) {
-            // Token might not be ready yet — wait a moment and retry
-            await new Promise(r => setTimeout(r, 1000))
+          if (!profile && event === 'INITIAL_SESSION' && isSubscribed) {
+            // Force token refresh — this uses the refresh_token to get a new
+            // access_token, guaranteeing subsequent queries work with RLS.
+            const { data } = await supabase.auth.refreshSession()
             if (!isSubscribed) return
-            profile = await fetchProfile(session.user)
+            if (data.session) {
+              profile = await fetchProfile(data.session.user)
+            }
           }
 
           if (!isSubscribed) return
