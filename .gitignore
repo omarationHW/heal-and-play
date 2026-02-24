@@ -33,3 +33,6 @@ dist-ssr
 
 # Documentation (local only)
 *.md
+
+# Admin queries (local only)
+supabase/admin-queries.sql

@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS sesiones_zoom (
 -- Auto-update updated_at
 CREATE TRIGGER set_updated_at_sesiones_zoom
   BEFORE UPDATE ON sesiones_zoom
-  FOR EACH ROW EXECUTE FUNCTION update_updated_at();
+  FOR EACH ROW EXECUTE FUNCTION handle_updated_at();
 
 -- ── RLS ──────────────────────────────────────────────────────
 ALTER TABLE sesiones_zoom ENABLE ROW LEVEL SECURITY;
@@ -63,8 +63,8 @@ VALUES (
   'https://us06web.zoom.us/j/89595748816?pwd=kq7LYcKK9oPXOsTIqWpQUx8f2Fwn1f.1',
   '895 9574 8816',
   'magia',
-  '2026-02-23T20:15:00-06:00',
-  'Cada semana los lunes, 8:15 PM CDMX',
+  '2026-02-23T20:30:00-06:00',
+  'Cada semana los lunes, 8:30 PM CDMX',
   true,
   1
 );

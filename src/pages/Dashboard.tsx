@@ -4,7 +4,7 @@ import { useAuth } from '../contexts/AuthContext'
 import { supabase } from '../lib/supabase'
 import { validateNombreCompleto } from '../lib/auth-helpers'
 import AddressInput from '../components/AddressInput'
-import type { MaterialDigital, SesionZoom } from '../types/database'
+import type { MaterialDigital, SesionZoom, Grabacion } from '../types/database'
 import type { MaterialTipo } from '../types/database'
 
 const countryCodes = [
@@ -31,15 +31,6 @@ function parsePhone(raw: string | null): { countryCode: string; number: string }
 }
 
 const comingSoonCards = [
-  {
-    title: 'Grabaciones',
-    description: 'Acceso a las grabaciones de talleres y sesiones grupales en las que has participado.',
-    icon: (
-      <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
-      </svg>
-    ),
-  },
   {
     title: 'Historial de Compras',
     description: 'Revisa tus compras anteriores, productos adquiridos y estado de tus pedidos.',
@@ -333,6 +324,7 @@ export default function Dashboard() {
           <>
             <ChallengeInfoSection />
             <SesionesSection />
+            <GrabacionesSection />
           </>
         )}
 
@@ -550,6 +542,114 @@ function SesionesSection() {
             </div>
           </div>
         ))}
+      </div>
+    </section>
+  )
+}
+
+// ──────────────────────────────────────────────
+// Grabaciones Section (YouTube embeds)
+// ──────────────────────────────────────────────
+
+function getYouTubeEmbedUrl(url: string): string | null {
+  try {
+    const parsed = new URL(url)
+    let videoId: string | null = null
+    if (parsed.hostname === 'youtu.be') {
+      videoId = parsed.pathname.slice(1)
+    } else if (parsed.hostname.includes('youtube.com')) {
+      videoId = parsed.searchParams.get('v')
+    }
+    return videoId ? `https://www.youtube.com/embed/${videoId}` : null
+  } catch {
+    return null
+  }
+}
+
+function GrabacionesSection() {
+  const { sessionReady } = useAuth()
+  const [grabaciones, setGrabaciones] = useState<Grabacion[]>([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    if (!sessionReady) return
+    const load = async () => {
+      setLoading(true)
+      try {
+        const { data, error } = await supabase
+          .from('grabaciones')
+          .select('*')
+          .eq('activa', true)
+          .order('orden', { ascending: true })
+        if (error) console.error('Error fetching grabaciones:', error)
+        setGrabaciones((data as Grabacion[]) || [])
+      } catch (err) {
+        console.error('Error fetching grabaciones:', err)
+      } finally {
+        setLoading(false)
+      }
+    }
+    load()
+  }, [sessionReady])
+
+  if (loading) {
+    return (
+      <section className="mb-8 sm:mb-12">
+        <h2 className="font-maven text-sm tracking-wider uppercase font-semibold mb-4 sm:mb-6">Grabaciones</h2>
+        <p className="text-xs text-dark/50">Cargando grabaciones...</p>
+      </section>
+    )
+  }
+
+  if (grabaciones.length === 0) {
+    return (
+      <section className="mb-8 sm:mb-12 font-carlito">
+        <h2 className="font-maven text-sm tracking-wider uppercase font-semibold mb-4 sm:mb-6">Grabaciones</h2>
+        <div className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-dark/5 text-center">
+          <p className="text-sm text-dark/50">Por el momento no hay grabaciones disponibles.</p>
+        </div>
+      </section>
+    )
+  }
+
+  return (
+    <section className="mb-8 sm:mb-12 font-carlito">
+      <h2 className="font-maven text-sm tracking-wider uppercase font-semibold mb-4 sm:mb-6">Grabaciones</h2>
+      <div className="grid grid-cols-1 gap-4">
+        {grabaciones.map((g) => {
+          const embedUrl = getYouTubeEmbedUrl(g.youtube_url)
+          return (
+            <div
+              key={g.id}
+              className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-dark/5"
+            >
+              {embedUrl && (
+                <div className="relative w-full pb-[56.25%] mb-3 sm:mb-4 rounded-xl overflow-hidden bg-dark/5">
+                  <iframe
+                    className="absolute inset-0 w-full h-full"
+                    src={embedUrl}
+                    title={g.titulo}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                </div>
+              )}
+              <h3 className="font-maven text-base sm:text-lg font-bold tracking-wide uppercase mb-1">{g.titulo}</h3>
+              {g.descripcion && (
+                <p className="text-xs sm:text-sm text-dark/60 mb-1">{g.descripcion}</p>
+              )}
+              {g.fecha_sesion && (
+                <p className="text-xs text-dark/40">
+                  {new Date(g.fecha_sesion + 'T12:00:00').toLocaleDateString('es-MX', {
+                    day: 'numeric',
+                    month: 'long',
+                    year: 'numeric',
+                  })}
+                </p>
+              )}
+            </div>
+          )
+        })}
       </div>
     </section>
   )

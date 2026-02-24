@@ -58,3 +58,14 @@ export interface SesionZoom {
   orden: number
   created_at: string
 }
+
+export interface Grabacion {
+  id: string
+  titulo: string
+  descripcion: string | null
+  youtube_url: string
+  fecha_sesion: string | null
+  activa: boolean
+  orden: number
+  created_at: string
+}
