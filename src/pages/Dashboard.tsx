@@ -551,16 +551,15 @@ function SesionesSection() {
 // Grabaciones Section (YouTube embeds)
 // ──────────────────────────────────────────────
 
-function getYouTubeEmbedUrl(url: string): string | null {
+function getYouTubeVideoId(url: string): string | null {
   try {
     const parsed = new URL(url)
-    let videoId: string | null = null
     if (parsed.hostname === 'youtu.be') {
-      videoId = parsed.pathname.slice(1)
+      return parsed.pathname.slice(1)
     } else if (parsed.hostname.includes('youtube.com')) {
-      videoId = parsed.searchParams.get('v')
+      return parsed.searchParams.get('v')
     }
-    return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : null
+    return null
   } catch {
     return null
   }
@@ -618,22 +617,32 @@ function GrabacionesSection() {
       <h2 className="font-maven text-sm tracking-wider uppercase font-semibold mb-4 sm:mb-6">Grabaciones</h2>
       <div className="grid grid-cols-1 gap-4">
         {grabaciones.map((g) => {
-          const embedUrl = getYouTubeEmbedUrl(g.youtube_url)
+          const videoId = getYouTubeVideoId(g.youtube_url)
           return (
             <div
               key={g.id}
               className="bg-white/60 backdrop-blur-sm rounded-2xl p-4 sm:p-6 md:p-8 border border-dark/5"
             >
-              {embedUrl && (
-                <div className="relative w-full pb-[56.25%] mb-3 sm:mb-4 rounded-xl overflow-hidden bg-dark/5">
-                  <iframe
-                    className="absolute inset-0 w-full h-full"
-                    src={embedUrl}
-                    title={g.titulo}
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allowFullScreen
+              {videoId && (
+                <a
+                  href={g.youtube_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="relative block w-full pb-[56.25%] mb-3 sm:mb-4 rounded-xl overflow-hidden bg-dark/5 group"
+                >
+                  <img
+                    src={`https://img.youtube.com/vi/${videoId}/hqdefault.jpg`}
+                    alt={g.titulo}
+                    className="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                   />
-                </div>
+                  <div className="absolute inset-0 bg-black/20 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                    <div className="w-14 h-14 sm:w-16 sm:h-16 bg-white/90 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                      <svg className="w-6 h-6 sm:w-7 sm:h-7 text-dark ml-1" fill="currentColor" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z" />
+                      </svg>
+                    </div>
+                  </div>
+                </a>
               )}
               <h3 className="font-maven text-base sm:text-lg font-bold tracking-wide uppercase mb-1">{g.titulo}</h3>
               {g.descripcion && (
