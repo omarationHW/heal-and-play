@@ -560,7 +560,7 @@ function getYouTubeEmbedUrl(url: string): string | null {
     } else if (parsed.hostname.includes('youtube.com')) {
       videoId = parsed.searchParams.get('v')
     }
-    return videoId ? `https://www.youtube.com/embed/${videoId}` : null
+    return videoId ? `https://www.youtube-nocookie.com/embed/${videoId}` : null
   } catch {
     return null
   }
