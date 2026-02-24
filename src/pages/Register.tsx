@@ -144,7 +144,7 @@ export default function Register() {
 
         <div>
           <label className="block text-xs tracking-wider uppercase text-dark/60 mb-1.5">
-            Frase secreta <span className="normal-case tracking-normal text-dark/40">(opcional)</span>
+            Palabra secreta <span className="normal-case tracking-normal text-dark/40">(opcional)</span>
           </label>
           <input
             type="text"
