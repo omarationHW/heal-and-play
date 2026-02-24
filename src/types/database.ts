@@ -67,5 +67,6 @@ export interface Grabacion {
   fecha_sesion: string | null
   activa: boolean
   orden: number
+  resumen: string | null
   created_at: string
 }

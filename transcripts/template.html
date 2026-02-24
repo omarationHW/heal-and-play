@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>New Girl Challenge - Sesion 1</title>
+  <link href="https://fonts.googleapis.com/css2?family=Maven+Pro:wght@400;500;600;700&family=Carlito:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    @font-face {
+      font-family: 'Brittany';
+      src: url('../public/fonts/Brittany.ttf') format('truetype');
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Carlito', sans-serif;
+      background: #f1ebe6;
+      color: #2e2b29;
+      line-height: 1.7;
+      padding: 0;
+    }
+
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      background: white;
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .header {
+      background: #2e2b29;
+      color: #f1ebe6;
+      padding: 40px 50px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .header img {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+    }
+
+    .header-title {
+      font-family: 'Maven Pro', sans-serif;
+      font-size: 11px;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      opacity: 0.7;
+    }
+
+    .header-session {
+      font-family: 'Brittany', cursive;
+      font-size: 32px;
+      margin-top: 2px;
+    }
+
+    .header-date {
+      font-family: 'Carlito', sans-serif;
+      font-size: 13px;
+      opacity: 0.6;
+      text-align: right;
+    }
+
+    /* Content */
+    .content {
+      padding: 40px 50px 60px;
+    }
+
+    .session-title {
+      font-family: 'Maven Pro', sans-serif;
+      font-size: 22px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      color: #2e2b29;
+    }
+
+    .session-subtitle {
+      font-size: 14px;
+      color: #2e2b29aa;
+      margin-bottom: 32px;
+      padding-bottom: 20px;
+      border-bottom: 1px solid #2e2b2915;
+    }
+
+    /* Sections */
+    h3 {
+      font-family: 'Maven Pro', sans-serif;
+      font-size: 15px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: #2e2b29;
+      margin-top: 32px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
+      border-bottom: 2px solid #2e2b2915;
+    }
+
+    ul {
+      list-style: none;
+      padding-left: 0;
+      margin-bottom: 8px;
+    }
+
+    ul li {
+      position: relative;
+      padding-left: 18px;
+      margin-bottom: 6px;
+      font-size: 14px;
+      color: #2e2b29cc;
+    }
+
+    ul li::before {
+      content: '\2727';
+      position: absolute;
+      left: 0;
+      color: #2e2b2960;
+      font-size: 10px;
+      top: 3px;
+    }
+
+    /* Nested lists */
+    ul ul {
+      margin-top: 6px;
+      margin-bottom: 4px;
+      padding-left: 8px;
+    }
+
+    ul ul li {
+      padding-left: 16px;
+      font-size: 13px;
+      color: #2e2b29aa;
+    }
+
+    ul ul li::before {
+      content: '\2013';
+      font-size: 11px;
+      top: 1px;
+    }
+
+    /* Ordered lists inside nested */
+    ol {
+      padding-left: 32px;
+      margin-top: 6px;
+      margin-bottom: 4px;
+    }
+
+    ol li {
+      font-size: 13px;
+      color: #2e2b29aa;
+      margin-bottom: 4px;
+      padding-left: 4px;
+    }
+
+    ol li::marker {
+      color: #2e2b2960;
+      font-weight: 600;
+    }
+
+    /* Footer */
+    .footer {
+      background: #2e2b29;
+      color: #f1ebe6;
+      padding: 20px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 11px;
+      opacity: 0.8;
+    }
+
+    .footer-brand {
+      font-family: 'Maven Pro', sans-serif;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+    }
+
+    .footer-note {
+      font-style: italic;
+      opacity: 0.7;
+    }
+
+    /* Print styles */
+    @media print {
+      body {
+        background: white;
+        padding: 0;
+      }
+      .page {
+        box-shadow: none;
+        max-width: 100%;
+      }
+      .header, .footer {
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <img src="../public/logoHPPNG.png" alt="Heal and Play">
+        <div>
+          <div class="header-title">Heal and Play</div>
+          <div class="header-session">Sesion 1</div>
+        </div>
+      </div>
+      <div class="header-date">
+        22 de Febrero de 2026
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="content">
+      <div class="session-title">New Girl Challenge</div>
+      <div class="session-subtitle">Resumen de la sesion - Emociones y Regulacion Emocional</div>
+
+      <h3>Introduccion al taller y lanzamiento de la plataforma</h3>
+      <ul>
+        <li>Lanzamiento de nueva plataforma para todas las actividades del taller y contenido futuro</li>
+        <li>Las participantes crean cuentas permanentes usando la palabra clave de acceso "MAGIA"</li>
+        <li>La plataforma incluye workbooks, grabaciones, resumenes de cada sesion y materiales descargables</li>
+        <li>La cuenta permanece activa de manera permanente para todos los talleres y actividades futuras</li>
+      </ul>
+
+      <h3>Estructura del programa de cuatro semanas</h3>
+      <ul>
+        <li>Modulo 1: Emociones y regulacion emocional (sesion de hoy)</li>
+        <li>Modulo 2: Conexion con el cuerpo y memoria corporal
+          <ul>
+            <li>Explora por que se va la motivacion a pesar del compromiso mental</li>
+            <li>Aborda patrones de abandono desde los primeros 8 anos de vida</li>
+          </ul>
+        </li>
+        <li>Modulo 3: Profundizacion en el sistema nervioso
+          <ul>
+            <li>El nervio vago regula el 85% de los organos</li>
+            <li>Impacta la toma de decisiones y las relaciones</li>
+          </ul>
+        </li>
+        <li>Modulo 4: Relaciones y rompimiento de patrones
+          <ul>
+            <li>Pasar de la huella de abandono a la conexion autentica</li>
+            <li>Trabajar el autosabotaje en las relaciones</li>
+          </ul>
+        </li>
+      </ul>
+
+      <h3>Concepto central: programacion de la identidad</h3>
+      <ul>
+        <li>Pregunta fundamental: ¿Eres quien realmente quieres ser o quien te dijeron que eras de nina?</li>
+        <li>La mayoria opera desde el condicionamiento infantil, no desde el yo autentico</li>
+        <li>Ejemplos: gustos de comida, actividades, patrones de pareja pueden ser condicionados</li>
+        <li>Meta: desprogramar la vieja identidad y crear una nueva en 4 semanas</li>
+      </ul>
+
+      <h3>Comprender emociones vs sentimientos</h3>
+      <ul>
+        <li>Emocion = estado del ser temporal (dura minutos)</li>
+        <li>Sentimiento = emocion que se arraiga porque la alimentamos mentalmente</li>
+        <li>Diferencia clave: la emocion es efimera; el sentimiento es un estado emocional prolongado</li>
+        <li>Depresion = sentimiento (prolongado); tristeza = emocion (temporal)</li>
+        <li>Lo que alarga una emocion y la vuelve sentimiento: resistencia y control</li>
+      </ul>
+
+      <h3>Regulacion emocional vs control emocional</h3>
+      <ul>
+        <li>Control = tension corporal, represion, distraccion, no querer sentir</li>
+        <li>Regulacion = acompanarte en el proceso de la emocion</li>
+        <li>Pasos para regularte:
+          <ol>
+            <li>Reconocer la emocion y su origen</li>
+            <li>Ver si la solucion esta en tus manos (si no, no es tu emocion)</li>
+            <li>Usar respiracion consciente (inhalo 4, sostengo 4, exhalo 4)</li>
+            <li>Mantenerte en el presente, no en pasado/futuro</li>
+          </ol>
+        </li>
+      </ul>
+
+      <h3>Triggers y memoria emocional</h3>
+      <ul>
+        <li>Trigger (disparador) = memoria emocional activada, no el evento externo</li>
+        <li>Cuando te detonas, reaccionas al pasado, no al presente</li>
+        <li>Triggers frecuentes: aromas, palabras, conductas, caricias, sabores, ambientes</li>
+        <li>El cuerpo no distingue entre experiencia "real" e imaginada</li>
+        <li>Emociones de supervivencia se guardan en el cuerpo hasta que se reconocen y procesan</li>
+        <li>Nombrar la emocion baja de inmediato la "alarma" del cerebro</li>
+      </ul>
+
+      <h3>Datos cientificos sobre emociones</h3>
+      <ul>
+        <li>Mayor adiccion humana: emociones negativas (estudios cientificos)</li>
+        <li>El cerebro no distingue verdad de mentira: cree lo que repites</li>
+        <li>El cuerpo percibe amenaza durante un trigger aunque no exista peligro real</li>
+        <li>Las emociones generan frecuencia que atrae experiencias similares</li>
+        <li>El presente es resultado de emociones y pensamientos del pasado</li>
+      </ul>
+
+      <h3>Practicas y tareas</h3>
+      <ul>
+        <li>Reconocimiento diario de emociones sin juicio</li>
+        <li>Eleccion consciente de como quieres sentirte al despertar (como elegir un outfit)</li>
+        <li>Respiraciones en momentos de intensidad emocional</li>
+        <li>Registro de triggers durante la semana</li>
+        <li>Ejercicios del workbook:
+          <ul>
+            <li>Patrones emocionales diarios</li>
+            <li>Mapeo de sensaciones corporales</li>
+            <li>Identificar frases de condicionamiento infantil</li>
+            <li>Escribir tu autoconcepto actual</li>
+          </ul>
+        </li>
+        <li>Afirmaciones diarias para regulacion emocional y manejo de triggers</li>
+      </ul>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-brand">Heal and Play</div>
+      <div class="footer-note">Material exclusivo para participantes</div>
+    </div>
+  </div>
+</body>
+</html>
