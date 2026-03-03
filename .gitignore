@@ -34,5 +34,8 @@ dist-ssr
 # Documentation (local only)
 *.md
 
+# Transcripts (local only)
+transcripts/
+
 # Admin queries (local only)
 supabase/admin-queries.sql
