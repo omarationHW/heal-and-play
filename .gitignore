@@ -37,5 +37,5 @@ dist-ssr
 # Transcripts (local only)
 transcripts/
 
-# Admin queries (local only)
-supabase/admin-queries.sql
+# Supabase (local only)
+supabase/
