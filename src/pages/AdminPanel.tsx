@@ -195,6 +195,7 @@ const accesoBadge: Record<MaterialAccesoNivel, { bg: string; text: string; label
   libre: { bg: 'bg-green-100', text: 'text-green-700', label: 'Libre' },
   premium: { bg: 'bg-amber-100', text: 'text-amber-700', label: 'Premium' },
   privado: { bg: 'bg-red-100', text: 'text-red-700', label: 'Privado' },
+  secreto: { bg: 'bg-purple-100', text: 'text-purple-700', label: 'Secreto' },
 }
 
 function MaterialesTab() {

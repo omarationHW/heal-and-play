@@ -167,13 +167,6 @@ export default function Productos() {
     window.open(`${whatsappBase}${mensaje}`, '_blank')
   }
 
-  const handlePreOrderMagicBox = () => {
-    const mensaje = encodeURIComponent(
-      `Hola! Quiero hacer un PRE-ORDER de The Magic Box. ¿Podrían darme más información sobre disponibilidad y precio?`
-    )
-    window.open(`${whatsappBase}${mensaje}`, '_blank')
-  }
-
   return (
     <section id="productos" className="py-16 md:py-24" ref={sectionRef}>
       <div className="w-full px-6 md:px-12 lg:px-20">
