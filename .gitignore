@@ -12,6 +12,9 @@ dist
 dist-ssr
 *.local
 
+# macOS
+Icon?
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
@@ -30,12 +33,10 @@ dist-ssr
 
 # Claude
 .claude/
+.agents/
 
-# Documentation (local only)
-*.md
-
-# Transcripts (local only)
-transcripts/
-
-# Supabase (local only)
+# Supabase migrations (run manually in SQL Editor, not deployed via git)
 supabase/
+
+# Transcripts (contenido privado de sesiones)
+transcripts/

@@ -1,19 +1,19 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom'
 import { AuthProvider } from './contexts/AuthContext'
 import ProtectedRoute from './components/ProtectedRoute'
-import ComingSoon from './pages/ComingSoon'
+import LandingPage from './pages/LandingPage'
 import Login from './pages/Login'
 import Register from './pages/Register'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
-import ResumenSesion from './pages/ResumenSesion'
+import AdminPanel from './pages/AdminPanel'
 
 function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
         <Routes>
-          <Route path="/" element={<ComingSoon />} />
+          <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<Login />} />
           <Route path="/registro" element={<Register />} />
           <Route path="/recuperar-password" element={<ResetPassword />} />
@@ -26,10 +26,10 @@ function App() {
             }
           />
           <Route
-            path="/dashboard/resumen/:id"
+            path="/admin"
             element={
-              <ProtectedRoute>
-                <ResumenSesion />
+              <ProtectedRoute requireAdmin>
+                <AdminPanel />
               </ProtectedRoute>
             }
           />

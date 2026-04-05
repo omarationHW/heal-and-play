@@ -13,11 +13,7 @@ const AUTH_ERROR_MESSAGES: Record<string, string> = {
 }
 
 export function getAuthErrorMessage(error: AuthError): string {
-  const translated = AUTH_ERROR_MESSAGES[error.message]
-  if (translated) return translated
-  // Log unmapped errors so we can debug and add translations
-  console.error('Unmapped auth error:', error.message)
-  return error.message || 'Ocurrió un error inesperado. Intenta de nuevo.'
+  return AUTH_ERROR_MESSAGES[error.message] ?? 'Ocurrió un error inesperado. Intenta de nuevo.'
 }
 
 export function validateEmail(email: string): string | null {
