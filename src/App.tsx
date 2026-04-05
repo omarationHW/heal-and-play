@@ -6,6 +6,7 @@ import Login from './pages/Login'
 import Register from './pages/Register'
 import ResetPassword from './pages/ResetPassword'
 import Dashboard from './pages/Dashboard'
+import ResumenSesion from './pages/ResumenSesion'
 import AdminPanel from './pages/AdminPanel'
 
 function App() {
@@ -22,6 +23,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/dashboard/resumen/:id"
+            element={
+              <ProtectedRoute>
+                <ResumenSesion />
               </ProtectedRoute>
             }
           />
