@@ -4,7 +4,7 @@ export default function QuienesSomos() {
   const { ref: sectionRef, isInView } = useInView<HTMLElement>({ threshold: 0.2 })
 
   return (
-    <section id="nosotros" className="py-12 md:py-20" ref={sectionRef}>
+    <section id="nosotros" className="pt-4 pb-12 md:pt-6 md:pb-20" ref={sectionRef}>
       <div className="w-full px-6 md:px-12 lg:px-20">
         <div className="max-w-7xl mx-auto">
           {/* Section Header */}
@@ -21,10 +21,12 @@ export default function QuienesSomos() {
           <div className="grid md:grid-cols-2 gap-12 items-center">
             {/* Image Placeholder */}
             <div className={`order-2 md:order-1 animate-on-scroll stagger-2 ${isInView ? 'in-view' : ''}`}>
-              <div className="aspect-[4/5] bg-dark/5 border border-dark/10 flex items-center justify-center img-zoom">
-                <p className="text-dark/40 text-sm uppercase tracking-wider">
-                  Foto proximamente
-                </p>
+              <div className="aspect-[3/4] max-w-sm mx-auto overflow-hidden border border-dark/10 img-zoom">
+                <img
+                  src="/quienes-somos.jpeg"
+                  alt="Heal and Play - Un espacio sagrado para tu sanación"
+                  className="w-full h-full object-cover"
+                />
               </div>
             </div>
 

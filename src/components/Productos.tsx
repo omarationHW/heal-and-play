@@ -1,80 +1,156 @@
 import { useState } from 'react'
 import { useInView } from '../hooks/useInView'
 
-type Categoria = 'todos' | 'velas' | 'aromaterapia' | 'sprays' | 'bienestar' | 'kits'
+type Categoria = 'todos' | 'ropa' | 'aromaterapia' | 'bienestar' | 'kits' | 'rituales'
+
+interface Variante {
+  nombre: string
+  color: string
+  precio?: string
+}
 
 interface Producto {
   id: number
   nombre: string
   descripcion: string
-  precio: number
+  precio: string
   categoria: Categoria
   imagen?: string
+  variantes?: Variante[]
+  opciones?: string[]
+  opcionesLabel?: string
+  nota?: string
 }
 
 const productos: Producto[] = [
   {
     id: 1,
-    nombre: 'Velas Vestidas',
-    descripcion: 'Velas preparadas con intención específica para rituales de sanación, amor, prosperidad y protección.',
-    precio: 150,
-    categoria: 'velas'
+    nombre: 'Hoodies',
+    descripcion: 'Hoodies exclusivos de Heal and Play para llevar tu energía a donde vayas.',
+    precio: 'Desde $800 MXN',
+    categoria: 'ropa',
+    imagen: '/productos/hoodies.jpg',
+    variantes: [
+      { nombre: 'Negro', color: '#1a1a1a', precio: '$800 MXN' },
+      { nombre: 'Morado', color: '#6B21A8', precio: '$1,200 MXN' }
+    ]
   },
   {
     id: 2,
-    nombre: 'Vela de Miel',
-    descripcion: 'Vela base intencionada con miel para endulzar situaciones y atraer energías positivas.',
-    precio: 120,
-    categoria: 'velas'
+    nombre: 'Sahumerios',
+    descripcion: 'Mezcla de hierbas sagradas para limpias energéticas profundas y ceremonias.',
+    precio: '1 x $60 · 4 x $200 MXN',
+    categoria: 'aromaterapia',
+    imagen: '/productos/sahumerios.jpg',
+    opcionesLabel: 'Intención',
+    opciones: ['Amor', 'Abundancia', 'Protección', 'Limpieza Energética']
   },
   {
     id: 3,
-    nombre: 'Inciensos Intencionados',
-    descripcion: 'Pack de inciensos preparados para limpiar espacios y elevar la vibración energética.',
-    precio: 80,
-    categoria: 'aromaterapia'
+    nombre: 'Escobetinas',
+    descripcion: 'Escobetinas artesanales para limpias energéticas y rituales de protección.',
+    precio: '$150 MXN',
+    categoria: 'rituales',
+    imagen: '/productos/escobetina.jpg',
+    opcionesLabel: 'Intención',
+    opciones: ['Amor', 'Abundancia', 'Protección', 'Limpieza Energética', 'Armonía Emocional']
   },
   {
     id: 4,
-    nombre: 'Sahumerios',
-    descripcion: 'Mezcla de hierbas sagradas para limpias energéticas profundas y ceremonias.',
-    precio: 100,
-    categoria: 'aromaterapia'
+    nombre: 'Mists',
+    descripcion: 'Sprays aromáticos con esencias naturales para armonizar tu espacio y elevar tu energía.',
+    precio: 'Pequeño $50 · Grande $100 MXN',
+    categoria: 'aromaterapia',
+    imagen: '/productos/mists.jpg',
+    opcionesLabel: 'Tipo',
+    opciones: ['Protección', 'Agua Florida', 'Amor']
   },
   {
     id: 5,
-    nombre: 'Spray Agua Florida',
-    descripcion: 'Agua de Florida en spray para limpieza energética rápida y protección personal.',
-    precio: 180,
-    categoria: 'sprays'
+    nombre: 'Kit Ritualito',
+    descripcion: 'Kit completo con todo lo que necesitas para realizar tus propios rituales de sanación.',
+    precio: '$250 MXN',
+    categoria: 'kits',
+    imagen: '/productos/ritualito.jpg',
+    opcionesLabel: 'Intención',
+    opciones: ['Amor', 'Cumpleaños', 'Abundancia', 'Protección', 'Amistad']
   },
   {
     id: 6,
-    nombre: 'Mists Energéticos',
-    descripcion: 'Sprays aromáticos con esencias naturales para armonizar tu espacio y elevar tu energía.',
-    precio: 200,
-    categoria: 'sprays'
+    nombre: 'Jabones Artesanales',
+    descripcion: 'Jabones hechos a mano con ingredientes naturales e intenciones de bienestar. Disponibles en: Armonía, Amor, Abundancia y Protección.',
+    precio: '2 x $299 MXN',
+    categoria: 'bienestar',
+    imagen: '/productos/jabones.jpg',
+    nota: 'A elegir 2 aromas'
   },
   {
     id: 7,
-    nombre: 'Cúrcuma Caps',
-    descripcion: 'Cápsulas de cúrcuma natural para bienestar antiinflamatorio y salud integral.',
-    precio: 250,
-    categoria: 'bienestar'
+    nombre: 'Kit 12 Velas',
+    descripcion: 'Set de 12 velas intencionadas para rituales de sanación, amor, prosperidad y protección.',
+    precio: '$1,111 MXN',
+    categoria: 'kits',
+    imagen: '/productos/kit12.jpg'
+  },
+  {
+    id: 8,
+    nombre: 'Diario Mágico',
+    descripcion: 'Diario diseñado para acompañarte en tu proceso de autoconocimiento y sanación.',
+    precio: '$799 MXN',
+    categoria: 'bienestar',
+    imagen: '/productos/agenda.jpg',
+    nota: 'Personalizado con tu nombre'
+  },
+  {
+    id: 9,
+    nombre: 'Baños Mágicos',
+    descripcion: 'Preparaciones de hierbas y sales para baños rituales de limpieza y renovación energética.',
+    precio: '$120 MXN',
+    categoria: 'rituales',
+    imagen: '/productos/banos.jpg',
+    opcionesLabel: 'Tipo',
+    opciones: ['Afrodita', 'Amor', 'Anti Envidias', 'Desbloqueo Mental', 'Abundancia']
+  },
+  {
+    id: 10,
+    nombre: 'Caps',
+    descripcion: 'Cápsulas naturales para bienestar integral. Disponibles en diferentes fórmulas según tus necesidades.',
+    precio: '$499 MXN',
+    categoria: 'bienestar',
+    imagen: '/productos/caps.jpg',
+    opcionesLabel: 'Fórmula',
+    opciones: ['Cúrcuma', 'Colágeno', 'Femi']
   }
 ]
 
 const categorias: { id: Categoria; nombre: string }[] = [
   { id: 'todos', nombre: 'Todos' },
-  { id: 'velas', nombre: 'Velas' },
+  { id: 'ropa', nombre: 'Ropa' },
   { id: 'aromaterapia', nombre: 'Aromaterapia' },
-  { id: 'sprays', nombre: 'Sprays & Mists' },
+  { id: 'rituales', nombre: 'Rituales' },
   { id: 'bienestar', nombre: 'Bienestar' },
   { id: 'kits', nombre: 'Kits' }
 ]
 
 export default function Productos() {
   const [categoriaActiva, setCategoriaActiva] = useState<Categoria>('todos')
+  const [productoSeleccionado, setProductoSeleccionado] = useState<Producto | null>(null)
+  const [varianteSeleccionada, setVarianteSeleccionada] = useState<string | null>(null)
+  const [opcionSeleccionada, setOpcionSeleccionada] = useState<string | null>(null)
+
+  const abrirModal = (producto: Producto) => {
+    setProductoSeleccionado(producto)
+    setVarianteSeleccionada(producto.variantes?.[0]?.nombre || null)
+    setOpcionSeleccionada(null)
+    document.body.style.overflow = 'hidden'
+  }
+
+  const cerrarModal = () => {
+    setProductoSeleccionado(null)
+    setVarianteSeleccionada(null)
+    setOpcionSeleccionada(null)
+    document.body.style.overflow = ''
+  }
   const { ref: sectionRef, isInView } = useInView<HTMLElement>({ threshold: 0.05 })
   const { ref: magicBoxRef, isInView: magicBoxInView } = useInView<HTMLDivElement>({ threshold: 0.2 })
 
@@ -86,7 +162,7 @@ export default function Productos() {
 
   const handleComprar = (producto: Producto) => {
     const mensaje = encodeURIComponent(
-      `Hola! Me interesa el producto: ${producto.nombre} ($${producto.precio} MXN). ¿Podrían darme más información?`
+      `Hola! Me interesa el producto: ${producto.nombre} (${producto.precio}). ¿Podrían darme más información?`
     )
     window.open(`${whatsappBase}${mensaje}`, '_blank')
   }
@@ -133,7 +209,7 @@ export default function Productos() {
                   <img
                     src="/Magic box (800 x 800 px).png"
                     alt="The Magic Box"
-                    className="relative w-64 md:w-80 lg:w-96 h-auto drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                    className="relative w-64 md:w-80 lg:w-96 h-auto drop-shadow-2xl hover:scale-105 transition-transform duration-500 animate-bounce-slow"
                   />
                 </div>
 
@@ -151,8 +227,9 @@ export default function Productos() {
                   </h3>
 
                   <p className="text-dark/70 leading-relaxed mb-6">
-                    Una caja sorpresa llena de herramientas de sanación y bienestar emocional,
-                    cuidadosamente seleccionadas para acompañarte en tu viaje de transformación interior.
+                    Cada mes, una caja nueva con productos de sanación y bienestar emocional
+                    cuidadosamente seleccionados. Por solo <span className="font-bold italic text-dark text-lg">$444 MXN</span> recibe productos con un valor real
+                    de <span className="font-bold italic text-dark text-lg">$1,111 MXN</span>.
                   </p>
 
                   {/* Mystery Box Value */}
@@ -166,12 +243,14 @@ export default function Productos() {
 
                   {/* Launch Date */}
                   <p className="text-sm uppercase tracking-wider text-dark/50 mb-4">
-                    Lanzamiento: 1 de Marzo 2026
+                    Lanzamiento: 1 de Abril 2026
                   </p>
 
                   {/* CTA */}
-                  <button
-                    onClick={handlePreOrderMagicBox}
+                  <a
+                    href="https://api.whatsapp.com/message/3HIAUMOGKWMBF1?autoload=1&app_absent=0"
+                    target="_blank"
+                    rel="noopener noreferrer"
                     className="inline-block px-8 py-4 bg-dark text-beige uppercase text-sm tracking-wider hover:bg-dark/90 transition-all duration-300 hover:scale-105 group"
                   >
                     <span className="flex items-center gap-2">
@@ -180,7 +259,7 @@ export default function Productos() {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 8l4 4m0 0l-4 4m4-4H3" />
                       </svg>
                     </span>
-                  </button>
+                  </a>
                 </div>
               </div>
             </div>
@@ -211,11 +290,12 @@ export default function Productos() {
           </div>
 
           {/* Products Grid */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          <div className="flex flex-wrap justify-center gap-6">
             {productosFiltrados.map((producto, index) => (
               <div
                 key={producto.id}
-                className={`group animate-on-scroll stagger-${(index % 6) + 1} ${isInView ? 'in-view' : ''}`}
+                className={`w-full sm:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] group animate-on-scroll stagger-${(index % 6) + 1} ${isInView ? 'in-view' : ''} cursor-pointer`}
+                onClick={() => abrirModal(producto)}
               >
                 {/* Product Image */}
                 <div className="aspect-square bg-dark/5 border border-dark/10 mb-4 overflow-hidden relative">
@@ -242,13 +322,13 @@ export default function Productos() {
                   <p className="text-sm text-dark/60 leading-relaxed line-clamp-2">
                     {producto.descripcion}
                   </p>
-                  <div className="flex items-center justify-between pt-2">
-                    <span className="text-lg font-medium">
-                      ${producto.precio} <span className="text-sm text-dark/50">MXN</span>
+                  <div className="flex items-center justify-between pt-2 gap-2">
+                    <span className="text-sm md:text-base font-medium">
+                      {producto.precio}
                     </span>
                     <button
-                      onClick={() => handleComprar(producto)}
-                      className="px-4 py-2 bg-dark text-beige text-xs uppercase tracking-wider hover:bg-dark/90 transition-all duration-300 hover:scale-105"
+                      onClick={(e) => { e.stopPropagation(); handleComprar(producto) }}
+                      className="px-4 py-2 bg-dark text-beige text-xs uppercase tracking-wider hover:bg-dark/90 transition-all duration-300 hover:scale-105 shrink-0"
                     >
                       Comprar
                     </button>
@@ -281,6 +361,140 @@ export default function Productos() {
           </div>
         </div>
       </div>
+
+      {/* Product Modal */}
+      {productoSeleccionado && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-dark/60 backdrop-blur-sm animate-modal-overlay"
+          onClick={() => cerrarModal()}
+        >
+          <div
+            className="relative bg-white max-w-lg w-full p-8 md:p-10 animate-modal-content"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close Button */}
+            <button
+              onClick={() => cerrarModal()}
+              className="absolute top-4 right-4 text-dark/40 hover:text-dark transition-colors"
+            >
+              <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Product Image */}
+            <div className="aspect-square bg-dark/5 border border-dark/10 mb-6 overflow-hidden">
+              {productoSeleccionado.imagen ? (
+                <img
+                  src={productoSeleccionado.imagen}
+                  alt={productoSeleccionado.nombre}
+                  className="w-full h-full object-cover"
+                />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <span className="text-dark/20 text-6xl">✧</span>
+                </div>
+              )}
+            </div>
+
+            {/* Product Info */}
+            <h3 className="text-2xl font-medium tracking-wide mb-3">
+              {productoSeleccionado.nombre}
+            </h3>
+            <p className="text-dark/70 leading-relaxed mb-6">
+              {productoSeleccionado.descripcion}
+            </p>
+
+            {/* Variantes */}
+            {productoSeleccionado.variantes && productoSeleccionado.variantes.length > 0 && (
+              <div className="mb-6">
+                <p className="text-sm text-dark/60 mb-3">Color:</p>
+                <div className="flex gap-3">
+                  {productoSeleccionado.variantes.map((v) => (
+                    <button
+                      key={v.nombre}
+                      onClick={() => setVarianteSeleccionada(v.nombre)}
+                      className={`flex items-center gap-2 px-4 py-2 border transition-all duration-200 ${
+                        varianteSeleccionada === v.nombre
+                          ? 'border-dark bg-dark/5'
+                          : 'border-dark/20 hover:border-dark/40'
+                      }`}
+                    >
+                      <span
+                        className="w-4 h-4 rounded-full border border-dark/20"
+                        style={{ backgroundColor: v.color }}
+                      />
+                      <span className="text-sm">{v.nombre}</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Opciones */}
+            {productoSeleccionado.opciones && productoSeleccionado.opciones.length > 0 && (
+              <div className="mb-6">
+                <p className="text-sm text-dark/60 mb-3">{productoSeleccionado.opcionesLabel || 'Opción'}:</p>
+                <div className="flex flex-wrap gap-2">
+                  {productoSeleccionado.opciones.map((op) => (
+                    <button
+                      key={op}
+                      onClick={() => setOpcionSeleccionada(op)}
+                      className={`px-4 py-2 text-sm border transition-all duration-200 ${
+                        opcionSeleccionada === op
+                          ? 'border-dark bg-dark text-beige'
+                          : 'border-dark/20 hover:border-dark/40'
+                      }`}
+                    >
+                      {op}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {(() => {
+              const variante = productoSeleccionado.variantes?.find(v => v.nombre === varianteSeleccionada)
+              const precioMostrado = variante?.precio || productoSeleccionado.precio
+              return (
+                <p className="text-xl font-medium mb-2">
+                  {precioMostrado}
+                </p>
+              )
+            })()}
+            {productoSeleccionado.nota && (
+              <p className="text-sm text-dark/60 italic mb-6">
+                ✧ {productoSeleccionado.nota}
+              </p>
+            )}
+            {!productoSeleccionado.nota && <div className="mb-6" />}
+
+            {/* CTA */}
+            <a
+              href={`https://api.whatsapp.com/message/3HIAUMOGKWMBF1?autoload=1&app_absent=0`}
+              target="_blank"
+              rel="noopener noreferrer"
+              onClick={(e) => {
+                const tieneVariante = productoSeleccionado.variantes && varianteSeleccionada
+                const tieneOpcion = productoSeleccionado.opciones && opcionSeleccionada
+                if (tieneVariante || tieneOpcion) {
+                  e.preventDefault()
+                  let detalle = productoSeleccionado.nombre
+                  if (tieneVariante) detalle += ` en color ${varianteSeleccionada}`
+                  if (tieneOpcion) detalle += ` - ${productoSeleccionado.opcionesLabel || 'Opción'}: ${opcionSeleccionada}`
+                  const mensaje = encodeURIComponent(
+                    `Hola! Me interesa: ${detalle}. ¿Podrían darme más información?`
+                  )
+                  window.open(`https://api.whatsapp.com/send?phone=&text=${mensaje}`, '_blank')
+                }
+              }}
+              className="block w-full text-center px-8 py-4 bg-dark text-beige uppercase text-sm tracking-wider hover:bg-dark/90 transition-all duration-300"
+            >
+              Preguntar por WhatsApp
+            </a>
+          </div>
+        </div>
+      )}
     </section>
   )
 }

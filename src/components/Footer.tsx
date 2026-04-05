@@ -9,7 +9,14 @@ export default function Footer() {
           <div className="grid md:grid-cols-3 gap-8 mb-8">
             {/* Brand */}
             <div>
-              <h3 className="text-xl tracking-[0.2em] uppercase mb-4">Heal and Play</h3>
+              <div className="flex items-center gap-3 mb-4">
+                <img
+                  src="/logoHP.jpeg"
+                  alt="Heal and Play Logo"
+                  className="w-12 h-12"
+                />
+                <h3 className="text-xl tracking-[0.2em] uppercase">Heal and Play</h3>
+              </div>
               <p className="text-beige/60 text-sm leading-relaxed">
                 Un espacio de sanacion y bienestar emocional.
                 Ayudamos a liberar memorias, desbloquear el campo energetico
