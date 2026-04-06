@@ -33,6 +33,12 @@ const servicios = [
     precio: 'Precio dependiendo taller'
   },
   {
+    titulo: 'Terapia de 7 Chakras',
+    descripcion: 'Alineación y desbloqueo de chakras con piedras, diapasones, péndulo, oráculo de chakras y sonoroterapia.',
+    icono: '✧',
+    precio: '$1,111 MXN'
+  },
+  {
     titulo: 'Limpias Energeticas',
     descripcion: 'Liberacion de energias estancadas que no te pertenecen. Renueva tu campo energetico y siente ligereza.',
     icono: '✧',
@@ -83,11 +89,11 @@ export default function Servicios() {
           </div>
 
           {/* Services Grid */}
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="flex flex-wrap justify-center gap-6">
             {servicios.map((servicio, index) => (
               <div
                 key={index}
-                className={`border border-beige/20 p-6 md:p-8 transition-all duration-300 group hover:border-beige/40 hover:bg-beige/5 animate-on-scroll cursor-pointer ${isInView ? 'in-view' : ''}`}
+                className={`w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)] border border-beige/20 p-6 md:p-8 transition-all duration-300 group hover:border-beige/40 hover:bg-beige/5 animate-on-scroll cursor-pointer ${isInView ? 'in-view' : ''}`}
                 style={{ transitionDelay: `${(index + 1) * 0.15}s` }}
                 onClick={() => abrirModal(servicio)}
               >

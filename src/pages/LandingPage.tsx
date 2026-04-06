@@ -4,6 +4,7 @@ import Hero from '../components/Hero'
 import QuienesSomos from '../components/QuienesSomos'
 import Servicios from '../components/Servicios'
 import Productos from '../components/Productos'
+import Sucursales from '../components/Sucursales'
 import Avisos from '../components/Avisos'
 import InstagramFeed from '../components/InstagramFeed'
 import Contacto from '../components/Contacto'
@@ -40,6 +41,7 @@ export default function LandingPage() {
       <QuienesSomos />
       <Servicios />
       <Productos />
+      <Sucursales />
       <Avisos />
       <InstagramFeed />
       <Contacto />
